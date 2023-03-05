@@ -5,15 +5,28 @@ Merges these into a joined format.
 Visualises the portfolio development using [[https://plotly.com/][Plotly]].
 
 #+caption: sampel portfolit
-[[file:portfolio.png]]
+[[file:portfolio.PNG]]
+
+- ~Value~ reprsents the value of all tickers and cash holdings.
+- ~Transfer~ represents the cash deposits and withdrawals.
+- ~Cash~ reprensets the cash holdings.
+
+The other summations are just examples. Customize or delete them as needed, see below.
 
 ** Using
 
 Install [[https://learn.microsoft.com/en-us/dotnet/core/install/][dotnet]]. Clone the repo and issue ~> dotnet run~.
 Download your own transaction logs and alter ~Program.fs~ to point to your own files.
+Note that running the program requests ticker info from [[yahoo.com][Yahoo]].
 
 ** Custom summation
 
-The ~SymbolGroups~ object determines how symbols are aggregated. For example pr. default the
-~Global~ group contains both symbols ("DKIGI.CO" and "TSLA"). Change these as you wish. The symbols are
-[[yahoo.com][Yahoo]] defult ticks symbols. The special symbols "Cash" and "Transfer" represent the cash in the account and the cash transfers.
+The ~SymbolGroups~ object in ~Program.fs~ determines how symbols are aggregated. Just below is the section that controls what is included in the plot.
+In the example the ~Global~ group contains two symbols ("DKIGI.CO" and "TSLA") and the ~Stocks~ group shows the value of all tickers, but is not currently plotted.
+The special symbols ~Cash~ and ~Transfer~ represent the cash in the account and the cash transfers. All other symbols are [[yahoo.com][Yahoo]] ticker symbols.
+
+** How it works
+First the transacions logs are read. All unique instruments are identified and we query Yahoo to try and get a ticker symbol.
+For the identified ticker symbols the currency and price history is collected from Yahoo as well.
+Finally the transactions and price information is aggregated to provid a timeline for each ticker found.
+Theses timelines can then be further aggregated via. the ~symbolGroups~ object. The resulting final aggregations are then plotted.

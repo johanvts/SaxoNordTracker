@@ -1,6 +1,6 @@
 * Portfolio tracking across Saxo bank and Nordnet accounts
 
-Accepts transaction logs from [[https://www.saxoinvestor.com/][Saxo Investor]] (xlsx) and [[nordnet.dk][Nordnet]] (csv).
+Accepts transaction logs from [[https://www.saxoinvestor.com/][Saxo Investor]] (xlsx) and [[http://www.nordnet.dk][Nordnet]] (csv).
 Merges these into a joined format.
 Visualises the portfolio development using [[https://plotly.com/][Plotly]].
 
@@ -17,7 +17,7 @@ The other summations are just examples. Customize or delete them as needed, see 
 
 Install [[https://learn.microsoft.com/en-us/dotnet/core/install/][dotnet]]. Clone the repo and issue ~> dotnet run~.
 Download your own transaction logs and alter ~Program.fs~ to point to your own files.
-Note that running the program requests ticker info from [[yahoo.com][Yahoo]].
+Note that running the program requests ticker info from [[http://yahoo.com][Yahoo]].
 
 ** Custom summation
 

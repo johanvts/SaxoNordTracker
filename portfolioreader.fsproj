@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="TransactionReader.fs" />
+    <Compile Include="YahooLookup.fs" />
+    <Compile Include="PriceUpdate.fs" />
+    <Compile Include="Accumulation.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ExcelProvider" Version="2.0.0" />
+    <PackageReference Include="FSharp.Data" Version="5.0.2" />
+    <PackageReference Include="Plotly.NET" Version="3.0.1" />
+  </ItemGroup>
+
+</Project>

@@ -7,7 +7,7 @@ Visualises the portfolio development using [[https://plotly.com/][Plotly]].
 #+caption: sampel portfolit
 [[file:portfolio.PNG]]
 
-- ~Value~ reprsents the value of all tickers and cash holdings.
+- ~Value~ represents the value of all tickers and cash holdings.
 - ~Transfer~ represents the cash deposits and withdrawals.
 - ~Cash~ reprensets the cash holdings.
 
@@ -17,8 +17,10 @@ The other summations are just examples. Customize or delete them as needed, see 
 
 - Install [[https://learn.microsoft.com/en-us/dotnet/core/install/][dotnet]].
 - Clone the repo.
-- Download your own transaction logs and alter ~Program.fs~ to point to your own files. Or continue with an example portfolio.
-- Issue ~> dotnet run~ (Note that running the program requests ticker info from [[http://yahoo.com][Yahoo]] and may take some depending on the number of tickers).
+- Download your own transaction logs and alter ~Program.fs~ to point to your own files. Or continue with an example portfolio (see the ~Data~ folder).
+  - From Saxo investor you want the full `Transactions` export. Not any of the sub-catogories (Trades, Corporate Actions, etc.). Use the Excel format.
+  - If something does not work check the ~Template~ folder. Your files should match the format of these.
+- Issue ~> dotnet run~ (Note that running the program requests ticker info from [[http://yahoo.com][Yahoo]] and may take some time depending on the number of tickers).
 - Open ~portfolio.html~.
   
 ** Custom summation

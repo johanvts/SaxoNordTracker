@@ -8,8 +8,7 @@ open Plotly.NET
 let saxo = new SaxoSheet("Data\Saxo_Transactions_Example.xlsx")
 let nordnet = NordnetCsv.Load(__SOURCE_DIRECTORY__ + "\Data\Nordnet_Transactions_Example.csv")
 
-//let transactions = readNordnet nordnet |> Seq.append (readSaxo saxo) |> Seq.sortBy(fun row -> row.date)
-let transactions = readSaxo saxo |> Seq.sortBy(fun row -> row.date)
+let transactions = readNordnet nordnet |> Seq.append (readSaxo saxo) |> Seq.sortBy(fun row -> row.date)
 let symbolsByQuery = transactions |> Seq.map(fun transaction -> transaction.instrumentQuery) |> Set.ofSeq |> Set.toList |> List.where(fun query -> not (System.String.IsNullOrEmpty query) && query.Length > 10) |>  List.map(fun query -> (query, (findSymbol query |> Async.RunSynchronously))) |> Map.ofList
 let symbols = symbolsByQuery.Values |> Seq.distinct |> Seq.toList
 let currencyBySymbol = symbolsByQuery.Values |>  Seq.map(fun symbol -> (symbol, (findCurrency symbol |> Async.RunSynchronously))) |> dict

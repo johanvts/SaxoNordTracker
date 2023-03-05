@@ -15,10 +15,12 @@ The other summations are just examples. Customize or delete them as needed, see 
 
 ** Using
 
-Install [[https://learn.microsoft.com/en-us/dotnet/core/install/][dotnet]]. Clone the repo and issue ~> dotnet run~.
-Download your own transaction logs and alter ~Program.fs~ to point to your own files.
-Note that running the program requests ticker info from [[http://yahoo.com][Yahoo]].
-
+- Install [[https://learn.microsoft.com/en-us/dotnet/core/install/][dotnet]].
+- Clone the repo.
+- Download your own transaction logs and alter ~Program.fs~ to point to your own files. Or continue with an example portfolio.
+- Issue ~> dotnet run~ (Note that running the program requests ticker info from [[http://yahoo.com][Yahoo]] and may take some depending on the number of tickers).
+- Open ~portfolio.html~.
+  
 ** Custom summation
 
 The ~SymbolGroups~ object in ~Program.fs~ determines how symbols are aggregated. Just below is the section that controls what is included in the plot.

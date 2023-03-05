@@ -30,7 +30,7 @@ In the example the ~Global~ group contains two symbols ("DKIGI.CO" and "TSLA") a
 The special symbols ~Cash~ and ~Transfer~ represent the cash in the account and the cash transfers. All other symbols are [[yahoo.com][Yahoo]] ticker symbols.
 
 ** How it works
-First the transacions logs are read. All unique instruments are identified and we query Yahoo to try and get a ticker symbol.
+First the transactions logs are read. All unique instruments are identified and we query Yahoo to try and get a ticker symbol.
 For the identified ticker symbols the currency and price history is collected from Yahoo as well.
-Finally the transactions and price information is aggregated to provid a timeline for each ticker found.
+Finally the transactions and price information is aggregated to provid a timeline for each ticker.
 Theses timelines can then be further aggregated via. the ~symbolGroups~ object. The resulting final aggregations are then plotted.

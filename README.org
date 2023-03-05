@@ -1,0 +1,19 @@
+* Portfolio tracking across Saxo bank and Nordnet accounts
+
+Accepts transaction logs from [[https://www.saxoinvestor.com/][Saxo Investor]] (xlsx) and [[nordnet.dk][Nordnet]] (csv).
+Merges these into a joined format.
+Visualises the portfolio development using [[https://plotly.com/][Plotly]].
+
+#+caption: sampel portfolit
+[[file:portfolio.png]]
+
+** Using
+
+Install [[https://learn.microsoft.com/en-us/dotnet/core/install/][dotnet]]. Clone the repo and issue ~> dotnet run~.
+Download your own transaction logs and alter ~Program.fs~ to point to your own files.
+
+** Custom summation
+
+The ~SymbolGroups~ object determines how symbols are aggregated. For example pr. default the
+~Global~ group contains both symbols ("DKIGI.CO" and "TSLA"). Change these as you wish. The symbols are
+[[yahoo.com][Yahoo]] defult ticks symbols. The special symbols "Cash" and "Transfer" represent the cash in the account and the cash transfers.

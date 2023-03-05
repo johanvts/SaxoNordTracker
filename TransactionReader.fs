@@ -53,9 +53,9 @@ let readSaxo (sheet:SaxoSheet) =
                         transactionType = Trade
                         instrument = row.Instrument;
                         instrumentQuery = row.Instrument.Substring(0,30);
-                        amount = amount;
+                        amount = if row.``Bogført beløb``.ToFloat() < 0.0 then amount else -amount;
                         instrumentPrice = rate;
-                        convertedPrice = -row.``Bogført beløb``.ToFloat() / amount;
+                        convertedPrice = System.Math.Abs(row.``Bogført beløb``.ToFloat() / amount);
                         accountedAmount = row.``Bogført beløb``.ToFloat();})
                 
 let readNordnet (data:NordnetCsv) =
@@ -78,5 +78,5 @@ let readNordnet (data:NordnetCsv) =
                               instrumentQuery=row.ISIN;
                               amount=if row.Beløb.ToFloatDanish() < 0.0 then row.Antal else -row.Antal;
                               instrumentPrice= row.Kurs;
-                              convertedPrice= if row.Antal = 0 then row.Kurs else (if row.Beløb.ToFloatDanish() < 0.0 then -row.Beløb.ToFloatDanish()/row.Antal else row.Beløb.ToFloatDanish()/row.Antal);
+                              convertedPrice= if row.Antal = 0 then row.Kurs else System.Math.Abs(row.Beløb.ToFloatDanish()/row.Antal);
                               accountedAmount=row.Beløb.ToFloatDanish()})

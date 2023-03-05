@@ -52,4 +52,4 @@ let getHistoricQuotesFrom (from:System.DateTime) (symbol:string) =
         return  YahooHistoric.Parse(response).Rows |> Seq.map(fun row -> row.Date, row.``Adj Close``) |> Seq.choose takeJustFloats
     }
     
-let getHistoricQuotes = getHistoricQuotesFrom (System.DateTime.Now.AddYears(-5))
+let getHistoricQuotes = getHistoricQuotesFrom (System.DateTime.Now.AddYears(-1))

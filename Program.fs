@@ -24,9 +24,7 @@ let aggregatedByMap (symbolsByGroup:Map<string,string list>) group =
     aggregatesBySymbol |> Seq.map(fun (date,amounts:Map<string,double>,prices:Map<string,double>) -> (date,symbols |> List.where(fun symbol -> amounts.ContainsKey symbol && prices.ContainsKey symbol) |> List.sumBy(fun symbol -> amounts.[symbol] * prices.[symbol])))
     
 let symbolGroups = [
-    ("Global",["DKIGI.CO";"TSLA"]);
     ("Stocks",symbols);
-    ("StockPicks",["TSLA"]);
     ("Cash",["Cash"]);
     ("Transfer",["Transfer"]);
     ("Value", "Cash"::symbols)] |> Map.ofList
@@ -34,8 +32,7 @@ let symbolGroups = [
 [
 Chart.Area(aggregatedByMap symbolGroups "Value",Name="Value")
 Chart.Area(aggregatedByMap symbolGroups "Transfer",Name="Transfer",LineWidth=0)
-Chart.Line(aggregatedByMap symbolGroups "StockPicks",Name="StockPicks")
-Chart.Line(aggregatedByMap symbolGroups "Global",Name="Global")
+Chart.Line(aggregatedByMap symbolGroups "Stocks",Name="Stocks")
 Chart.Line(aggregatedByMap symbolGroups "Cash",Name="Cash")
 ]
 |> Chart.combine

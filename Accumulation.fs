@@ -29,5 +29,5 @@ let addUpdate (symbolsByQuery:Map<string,string>) state = function
 let accumulateUpdatesBySymbol (symbolsByQuery:Map<string,string>) updates =
     let cashSymbol = "Cash"
     let transferSymbol = "Transfer"
-    updates |> Seq.scan (addUpdate (symbolsByQuery.Add("Cash", cashSymbol).Add("Transfer", transferSymbol))) (System.DateTime.Now,Map.empty.Add(cashSymbol,0.0).Add(transferSymbol,0.0),Map.empty.Add(cashSymbol,1.0).Add(transferSymbol,1.0)) |> Seq.skip 1
+    updates |> Seq.scan (addUpdate (symbolsByQuery.Add("Cash", cashSymbol).Add("Transfer", transferSymbol))) (System.DateTime.Now,Map.empty.Add(cashSymbol,0.0).Add(transferSymbol,0.0),Map.empty) |> Seq.skip 1
 

@@ -5,7 +5,7 @@ module TransactionReader
 open FSharp.Interop.Excel
 open FSharp.Data
 
-type SaxoSheet = ExcelFile<"c:\Users\Johan\portfolioreader\Templates\Saxo_Transactions_template.xlsx", ForceString=true>
+type SaxoSheet = ExcelFile<"c:\Users\Johan\SaxoNordTracker\Templates\Saxo_Transactions_template.xlsx", ForceString=true>
 type NordnetCsv = CsvProvider< @"c:\Users\Johan\portfolioreader\templates\Nordnet_Transactions_template.csv">
 type TransactionType = Transfer | Trade | InternalTransfer
 type Transaction = {date: System.DateTime; transactionType: TransactionType; instrument: string; instrumentQuery:string; amount: double; instrumentPrice: double; convertedPrice: double; accountedAmount: double}
@@ -41,10 +41,10 @@ let readSaxo (sheet:SaxoSheet) =
                         transactionType = row.Type.ToTransactionType();
                         instrument = row.Instrument;
                         instrumentQuery = row.Instrument;
-                        amount = row.``Bogført beløb``.ToFloat();
+                        amount = row.``Antal/Beløb``.ToFloat();
                         instrumentPrice = 1.0;
                         convertedPrice = 1.0;
-                        accountedAmount = row.``Bogført beløb``.ToFloat()}
+                        accountedAmount = row.``Antal/Beløb``.ToFloat()}
                    | Trade ->
                        let (amount,rate) = row.Arrangement.ToAmountAndRate()
                        {date = System.DateTime.Parse(row.Handelsdato
@@ -55,8 +55,8 @@ let readSaxo (sheet:SaxoSheet) =
                         instrumentQuery = row.Instrument.Substring(0,30);
                         amount = amount;
                         instrumentPrice = rate;
-                        convertedPrice = System.Math.Abs(row.``Bogført beløb``.ToFloat() / amount);
-                        accountedAmount = row.``Bogført beløb``.ToFloat();})
+                        convertedPrice = System.Math.Abs(row.``Antal/Beløb``.ToFloat() / amount);
+                        accountedAmount = row.``Antal/Beløb``.ToFloat();})
                 
 let readNordnet (data:NordnetCsv) =
     data.Rows |> Seq.map(fun row ->

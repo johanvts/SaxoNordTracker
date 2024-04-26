@@ -2,18 +2,27 @@
 open YahooLookup
 open PriceUpdate
 open Accumulation
-open System.Collections.Generic
 open Plotly.NET
 
-let saxo = new SaxoSheet("Data\Saxo_Transactions_Example.xlsx")
-let nordnet = NordnetCsv.Load(__SOURCE_DIRECTORY__ + "\Data\Nordnet_Transactions_Example.csv")
+//let saxo = new SaxoSheet("Data\Saxo_Transactions_Example.xlsx")
+let saxoA = new SaxoSheet(@"C:\Users\Johan\portfolioreader\data\Transactions_9220037_2019-02-06_2024-02-12.xlsx")
+let saxoB = new SaxoSheet(@"c:\Users\Johan\portfolioreader\data\Transactions_9345630_2019-04-08_2024-03-12.xlsx")
+//let nordnet = NordnetCsv.Load(__SOURCE_DIRECTORY__ + "\Data\Nordnet_Transactions_Example.csv")
+let nordnet = NordnetCsv.Load(@"c:\Users\Johan\portfolioreader\data\transactions-and-notes-export.csv")
 
-let transactions = readNordnet nordnet |> Seq.append (readSaxo saxo) |> Seq.sortBy(fun row -> row.date)
+let transactions = readNordnet nordnet |> Seq.append (readSaxo saxoA) |> Seq.append (readSaxo saxoB) |> Seq.sortBy(fun row -> row.date)
 let symbolsByQuery = transactions |> Seq.map(fun transaction -> transaction.instrumentQuery) |> Set.ofSeq |> Set.toList |> List.where(fun query -> not (System.String.IsNullOrEmpty query) && query.Length > 10) |>  List.map(fun query -> (query, (findSymbol query |> Async.RunSynchronously))) |> Map.ofList
+
+
 let symbols = symbolsByQuery.Values |> Seq.distinct |> Seq.toList
-let currencyBySymbol = symbolsByQuery.Values |>  Seq.map(fun symbol -> (symbol, (findCurrency symbol |> Async.RunSynchronously))) |> dict
-let transactionUpdates = transactions |> Seq.map (fun t -> TransactionUpdate t)
-let priceUpdates = (generatePriceCorrectionTransactions symbols currencyBySymbol) |> Seq.map(fun pu -> PriceUpdate pu)
+let currencyBySymbol = symbolsByQuery.Keys |> Seq.map(fun query ->
+                                                       (symbolsByQuery[query],
+                                                        (match transactions |> Seq.tryFind(fun transaction -> transaction.instrumentQuery = query) with
+                                                         | Some transaction -> transaction.currency
+                                                         | None -> "DKK"))) |> dict
+
+let transactionUpdates = transactions |> Seq.map TransactionUpdate
+let priceUpdates = (generatePriceCorrectionTransactions symbols currencyBySymbol) |> Seq.map PriceUpdate
 let updates = Seq.append transactionUpdates priceUpdates |> Seq.sortBy(fun update -> update.date)
 
 

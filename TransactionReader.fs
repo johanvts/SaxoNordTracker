@@ -6,9 +6,10 @@ open FSharp.Interop.Excel
 open FSharp.Data
 
 type SaxoSheet = ExcelFile<"c:\Users\Johan\SaxoNordTracker\Templates\Saxo_Transactions_template.xlsx", ForceString=true>
-type NordnetCsv = CsvProvider< @"c:\Users\Johan\portfolioreader\templates\Nordnet_Transactions_template.csv">
+type SaxoSheetLegacy = ExcelFile<"c:\Users\Johan\portfolioreader\Templates\Saxo_Transactions_template.xlsx", ForceString=true>
+type NordnetCsv = CsvProvider< @"C:\Users\Johan\SaxoNordTracker\Templates\Nordnet_Transactions_template.csv">
 type TransactionType = Transfer | Trade | InternalTransfer
-type Transaction = {date: System.DateTime; transactionType: TransactionType; instrument: string; instrumentQuery:string; amount: double; instrumentPrice: double; convertedPrice: double; accountedAmount: double}
+type Transaction = {date: System.DateTime; transactionType: TransactionType; instrument: string; instrumentQuery:string; amount: double; instrumentPrice: double; convertedPrice: double; accountedAmount: double; currency: string}
 
 type System.String with
     member s.ToTransactionType() =
@@ -40,11 +41,12 @@ let readSaxo (sheet:SaxoSheet) =
                                                         .Replace("okt","oct"));
                         transactionType = row.Type.ToTransactionType();
                         instrument = row.Instrument;
-                        instrumentQuery = row.Instrument;
+                        instrumentQuery = row.``Instrumentets ISIN``;
                         amount = row.``Antal/Beløb``.ToFloat();
                         instrumentPrice = 1.0;
                         convertedPrice = 1.0;
-                        accountedAmount = row.``Antal/Beløb``.ToFloat()}
+                        accountedAmount = row.``Antal/Beløb``.ToFloat();
+                        currency = row.Instrumentvaluta;}
                    | Trade ->
                        let (amount,rate) = row.Arrangement.ToAmountAndRate()
                        {date = System.DateTime.Parse(row.Handelsdato
@@ -52,12 +54,13 @@ let readSaxo (sheet:SaxoSheet) =
                                                         .Replace("okt","oct"));
                         transactionType = Trade
                         instrument = row.Instrument;
-                        instrumentQuery = row.Instrument.Substring(0,30);
+                        instrumentQuery = row.``Instrumentets ISIN``;
                         amount = amount;
                         instrumentPrice = rate;
                         convertedPrice = System.Math.Abs(row.``Antal/Beløb``.ToFloat() / amount);
-                        accountedAmount = row.``Antal/Beløb``.ToFloat();})
-                
+                        accountedAmount = row.``Antal/Beløb``.ToFloat();
+                        currency = row.Instrumentvaluta;})
+
 let readNordnet (data:NordnetCsv) =
     data.Rows |> Seq.map(fun row ->
                          match row.Transaktionstype.ToTransactionType() with
@@ -70,7 +73,8 @@ let readNordnet (data:NordnetCsv) =
                               amount=row.Beløb.ToFloatDanish();                                 
                               instrumentPrice= 1.0;
                               convertedPrice= 1.0;
-                              accountedAmount=row.Beløb.ToFloatDanish()}
+                              accountedAmount=row.Beløb.ToFloatDanish();
+                              currency = row.Valuta}
                          | Trade ->
                              {date = row.Bogføringsdag;
                               transactionType = Trade;
@@ -79,4 +83,5 @@ let readNordnet (data:NordnetCsv) =
                               amount=if row.Beløb.ToFloatDanish() < 0.0 then row.Antal else -row.Antal;
                               instrumentPrice= row.Kurs;
                               convertedPrice= if row.Antal = 0 then row.Kurs else System.Math.Abs(row.Beløb.ToFloatDanish()/row.Antal);
-                              accountedAmount=row.Beløb.ToFloatDanish()})
+                              accountedAmount=row.Beløb.ToFloatDanish()
+                              currency = row.Valuta};)

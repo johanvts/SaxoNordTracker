@@ -21,25 +21,6 @@ let findSymbol (isin:string) =
         return response.Substring(symbolStart,symbolEnd-symbolStart)
         }
 
-let findCurrency symbol =
-    async {
-        let mutable line = ""
-        try
-            use client = new HttpClient()
-            let url = $"https://finance.yahoo.com/quote/{symbol}"
-            let! stream = client.GetStreamAsync(url) |> Async.AwaitTask
-            let streamReader = new System.IO.StreamReader(stream)  
-        
-            while (line <> null && not(line.Contains("Currency in "))) do
-                line <- streamReader.ReadLine()           
-           
-            stream.Close()
-
-            if line <> null then return line.Substring(line.IndexOf("Currency in") + 12,3) else return "DKK"
-        with
-            | _-> return "DKK"
-        }
-
 let getHistoricQuotesFrom (from:System.DateTime) (symbol:string) =
     async {
         use client = new HttpClient()

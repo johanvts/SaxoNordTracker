@@ -28,10 +28,9 @@ let updates = Seq.append transactionUpdates priceUpdates |> Seq.sortBy(fun updat
 
 let aggregatesBySymbol = updates |> accumulateUpdatesBySymbol symbolsByQuery
 
-let aggregatedByMap (symbolsByGroup:Map<string,string list>) group =
-    let symbols = symbolsByGroup.[group]
+let aggregatedByMap symbols =
     aggregatesBySymbol |> Seq.map(fun (date,amounts:Map<string,double>,prices:Map<string,double>) -> (date,symbols |> List.where(fun symbol -> amounts.ContainsKey symbol && prices.ContainsKey symbol) |> List.sumBy(fun symbol -> amounts.[symbol] * prices.[symbol])))
-    
+
 let symbolGroups = [
     ("Stocks",symbols);
     ("Cash",["Cash"]);
@@ -39,11 +38,13 @@ let symbolGroups = [
     ("Value", "Cash"::symbols)] |> Map.ofList
 
 [
-Chart.Area(aggregatedByMap symbolGroups "Value",Name="Value")
-Chart.Area(aggregatedByMap symbolGroups "Transfer",Name="Transfer",LineWidth=0)
-Chart.Line(aggregatedByMap symbolGroups "Stocks",Name="Stocks")
-Chart.Line(aggregatedByMap symbolGroups "Cash",Name="Cash")
+Chart.Area(aggregatedByMap symbolGroups.["Value"],Name="Value")
+Chart.Area(aggregatedByMap symbolGroups.["Transfer"],Name="Transfer",LineWidth=0)
+Chart.Line(aggregatedByMap symbolGroups.["Stocks"],Name="Stocks")
+Chart.Line(aggregatedByMap symbolGroups.["Cash"],Name="Cash")
 ]
+|>
+List.append (symbols |> List.map(fun symbol -> Chart.Line(aggregatedByMap [symbol],Name=symbol)))
 |> Chart.combine
 |> Chart.withSize(1200.,800.)
 |> Chart.withTitle("Portfolio development")

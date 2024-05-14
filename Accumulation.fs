@@ -3,6 +3,10 @@ module Accumulation
 open TransactionReader
 open PriceUpdate
 
+// The idea here is to accumulate updates into two maps keyed on Symbol
+// The first map tracks the number of shares held of the symbol
+// The second maps trackts the price of the symbol
+
 let addPriceupdate (_,amounts:Map<string,float>,prices:Map<string,float>) (priceUpdate:PriceUpdate) =
     (priceUpdate.date,
      amounts,
@@ -26,8 +30,10 @@ let addUpdate (symbolsByQuery:Map<string,string>) state = function
     | PriceUpdate pu -> addPriceupdate state pu
     | TransactionUpdate tu -> addTransaction symbolsByQuery state tu
 
+
 let accumulateUpdatesBySymbol (symbolsByQuery:Map<string,string>) updates =
     let cashSymbol = "Cash"
     let transferSymbol = "Transfer"
-    updates |> Seq.scan (addUpdate (symbolsByQuery.Add("Cash", cashSymbol).Add("Transfer", transferSymbol))) (System.DateTime.Now,Map.empty.Add(cashSymbol,0.0).Add(transferSymbol,0.0),Map.empty) |> Seq.skip 1
+    let startState = (System.DateTime.Now,Map.empty.Add(cashSymbol,0.0).Add(transferSymbol,0.0),Map.empty)
+    updates |> Seq.scan (addUpdate (symbolsByQuery.Add("Cash", cashSymbol).Add("Transfer", transferSymbol))) startState |> Seq.skip 1
 

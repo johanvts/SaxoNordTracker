@@ -12,8 +12,6 @@ let nordnet = NordnetCsv.Load(@"c:\Users\Johan\portfolioreader\data\transactions
 
 let transactions = readNordnet nordnet |> Seq.append (readSaxo saxoA) |> Seq.append (readSaxo saxoB) |> Seq.sortBy(fun row -> row.date)
 let symbolsByQuery = transactions |> Seq.map(fun transaction -> transaction.instrumentQuery) |> Set.ofSeq |> Set.toList |> List.where(fun query -> not (System.String.IsNullOrEmpty query) && query.Length > 10) |>  List.map(fun query -> (query, (findSymbol query |> Async.RunSynchronously))) |> Map.ofList
-
-
 let symbols = symbolsByQuery.Values |> Seq.distinct |> Seq.toList
 let currencyBySymbol = symbolsByQuery.Keys |> Seq.map(fun query ->
                                                        (symbolsByQuery[query],
@@ -24,8 +22,6 @@ let currencyBySymbol = symbolsByQuery.Keys |> Seq.map(fun query ->
 let transactionUpdates = transactions |> Seq.map TransactionUpdate
 let priceUpdates = (generatePriceCorrectionTransactions symbols currencyBySymbol) |> Seq.map PriceUpdate
 let updates = Seq.append transactionUpdates priceUpdates |> Seq.sortBy(fun update -> update.date)
-
-
 let aggregatesBySymbol = updates |> accumulateUpdatesBySymbol symbolsByQuery
 
 let aggregatedByMap symbols =

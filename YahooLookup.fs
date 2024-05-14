@@ -18,7 +18,9 @@ let findSymbol (isin:string) =
         let symbolIndicator = "symbol\":\""
         let symbolStart = response.IndexOf(symbolIndicator) + symbolIndicator.Length
         let symbolEnd = response.IndexOf("\"",symbolStart)
-        return response.Substring(symbolStart,symbolEnd-symbolStart)
+        let symbol = response.Substring(symbolStart,symbolEnd-symbolStart)
+        // Manually prefer Amsterdam over London
+        return match symbol.[^1..] with | ".L" -> symbol.[..^2]+".AS" | _ -> symbol 
         }
 
 let getHistoricQuotesFrom (from:System.DateTime) (symbol:string) =

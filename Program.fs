@@ -3,6 +3,7 @@ open YahooLookup
 open PriceUpdate
 open Accumulation
 open Plotly.NET
+open System.Net.Http
 
 //let saxo = new SaxoSheet("Data\Saxo_Transactions_Example.xlsx")
 let saxoA = new SaxoSheet(@"C:\Users\Johan\portfolioreader\data\Transactions_9220037_2019-02-06_2024-02-12.xlsx")
@@ -11,7 +12,9 @@ let saxoB = new SaxoSheet(@"c:\Users\Johan\portfolioreader\data\Transactions_934
 let nordnet = NordnetCsv.Load(@"c:\Users\Johan\portfolioreader\data\transactions-and-notes-export.csv")
 
 let transactions = readNordnet nordnet |> Seq.append (readSaxo saxoA) |> Seq.append (readSaxo saxoB) |> Seq.sortBy(fun row -> row.date)
-let symbolsByQuery = transactions |> Seq.map(fun transaction -> transaction.instrumentQuery) |> Set.ofSeq |> Set.toList |> List.where(fun query -> not (System.String.IsNullOrEmpty query) && query.Length > 10) |>  List.map(fun query -> (query, (findSymbol query |> Async.RunSynchronously))) |> Map.ofList
+let client = new HttpClient()
+client.DefaultRequestHeaders.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+let symbolsByQuery = transactions |> Seq.map(fun transaction -> transaction.instrumentQuery) |> Set.ofSeq |> Set.toList |> List.where(fun query -> not (System.String.IsNullOrEmpty query) && query.Length > 10) |>  List.map(fun query -> (query, (findSymbol client query |> Async.RunSynchronously))) |> Map.ofList
 let symbols = symbolsByQuery.Values |> Seq.distinct |> Seq.toList
 let currencyBySymbol = symbolsByQuery.Keys |> Seq.map(fun query ->
                                                        (symbolsByQuery[query],
@@ -20,7 +23,7 @@ let currencyBySymbol = symbolsByQuery.Keys |> Seq.map(fun query ->
                                                          | None -> "DKK"))) |> dict
 
 let transactionUpdates = transactions |> Seq.map TransactionUpdate
-let priceUpdates = (generatePriceCorrectionTransactions symbols currencyBySymbol) |> Seq.map PriceUpdate
+let priceUpdates = (generatePriceCorrectionTransactions client symbols currencyBySymbol) |> Seq.map PriceUpdate
 let updates = Seq.append transactionUpdates priceUpdates |> Seq.sortBy(fun update -> update.date)
 let aggregatesBySymbol = updates |> accumulateUpdatesBySymbol symbolsByQuery
 
